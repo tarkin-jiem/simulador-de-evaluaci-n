@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador EGEL Plus - Biología</title>
+    <!-- Tailwind CSS para el diseño rápido y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        bio: '#10b981',      // Emerald (Biodiversidad)
+                        recursos: '#14b8a6', // Teal (Recursos Bióticos)
+                        sistemas: '#06b6d4', // Cyan (Sistemas Vivos)
+                        investiga: '#3b82f6',// Blue (Investigación)
+                        lectora: '#8b5cf6',  // Violet (Comprensión)
+                        redaccion: '#d946ef' // Fuchsia (Redacción)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animaciones suaves para las transiciones */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Ocultar el input radio original */
+        input[type="radio"] {
+            display: none;
+        }
+        
+        /* Estilos condicionales cuando el radio está seleccionado */
+        input[type="radio"]:checked + label {
+            border-color: currentColor;
+            background-color: rgba(currentColor, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: scale(1.02);
+        }
+        input[type="radio"]:checked + label .check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        label {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans pb-10">
+
+    <!-- Header Principal -->
+    <header class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white text-emerald-600 p-2 rounded-lg text-2xl">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold leading-tight">Simulador EGEL Plus</h1>
+                    <p class="text-sm opacity-90">Ciencias Biológicas (EGE-BIO)</p>
+                </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full sm:w-1/3">
+                <div class="flex justify-between text-xs mb-1 font-medium">
+                    <span>Progreso</span>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-white/30 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-white h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal del Formulario -->
+    <main class="max-w-4xl mx-auto px-4 mt-6 sm:mt-10">
+        <form id="egel-form" class="bg-white rounded-2xl shadow-xl overflow-hidden relative">
+            
+            <!-- PASO 1: Biodiversidad (7 Preguntas) -->
+            <div class="form-step fade-in" data-step="1">
+                <div class="bg-emerald-500 text-white p-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fas fa-globe-americas"></i> Sección 1: Biodiversidad
+                    </h2>
+                    <p class="text-emerald-50 mt-2">Fundamentos de taxonomía, sistemática, evolución y conservación.</p>
+                </div>
+                <div class="p-6 sm:p-8 space-y-10">
+                    
+                    <!-- Pregunta 1 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">1. ¿Cuál es el principal objetivo de la sistemática biológica a diferencia de la taxonomía básica?</h3>
+                            <button type="button" onclick="toggleHint('hint-1')" class="shrink-0 text-amber-500 hover:text-amber-600 text-sm font-medium flex items-center gap-1 transition-colors bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">
+                                <i class="fas fa-lightbulb"></i> Apoyo
+                            </button>
+                        </div>
+                        <div id="hint-1" class="hidden mb-4 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-900 rounded-r text-sm">
+                            <strong>Pista:</strong> La taxonomía clasifica y nombra; la sistemática va más atrás en el tiempo.
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p1-a" name="q1" value="A"><label for="p1-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Asignar nombres binomiales a nuevas especies.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 scale-50 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p1-b" name="q1" value="B"><label for="p1-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) Estudiar la diversidad biológica y sus relaciones evolutivas (filogenia).<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 scale-50 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p1-c" name="q1" value="C"><label for="p1-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) Proteger a las especies en reservas naturales.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 scale-50 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p1-d" name="q1" value="D"><label for="p1-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">D) Analizar el comportamiento animal natural.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 scale-50 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">2. Según el concepto biológico de especie propuesto por Ernst Mayr, ¿qué define fundamentalmente a una especie?</h3>
+                            <button type="button" onclick="toggleHint('hint-2')" class="shrink-0 text-amber-500 hover:text-amber-600 text-sm font-medium flex items-center gap-1 transition-colors bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200"><i class="fas fa-lightbulb"></i> Apoyo</button>
+                        </div>
+                        <div id="hint-2" class="hidden mb-4 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-900 rounded-r text-sm"><strong>Pista:</strong> Se enfoca en la capacidad genética de mantener a la población en el tiempo sin mezclarse con otras.</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p2-a" name="q2" value="A"><label for="p2-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Similitud morfológica extrema.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p2-b" name="q2" value="B"><label for="p2-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) Aislamiento reproductivo de otras poblaciones.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p2-c" name="q2" value="C"><label for="p2-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) Compartir el mismo nicho ecológico.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p2-d" name="q2" value="D"><label for="p2-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">D) Tener una secuencia de ADN 100% idéntica.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">3. El índice de Shannon-Wiener se utiliza en ecología de comunidades para medir:</h3>
+                            <button type="button" onclick="toggleHint('hint-3')" class="shrink-0 text-amber-500 hover:text-amber-600 text-sm font-medium flex items-center gap-1 transition-colors bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200"><i class="fas fa-lightbulb"></i> Apoyo</button>
+                        </div>
+                        <div id="hint-3" class="hidden mb-4 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-900 rounded-r text-sm"><strong>Pista:</strong> Este índice no solo cuenta cuántas especies hay, sino cómo se reparten los individuos entre ellas.</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p3-a" name="q3" value="A"><label for="p3-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Exclusivamente la riqueza de especies.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p3-b" name="q3" value="B"><label for="p3-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) La biomasa total de un ecosistema.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p3-c" name="q3" value="C"><label for="p3-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) La diversidad alfa (riqueza y equidad).<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p3-d" name="q3" value="D"><label for="p3-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">D) La tasa de extinción de especies endémicas.<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">4. ¿Cómo se denomina al proceso evolutivo donde una nueva especie surge debido a una barrera geográfica física?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p4-a" name="q4" value="A"><label for="p4-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Especiación simpátrica<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p4-b" name="q4" value="B"><label for="p4-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) Especiación alopátrica<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p4-c" name="q4" value="C"><label for="p4-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) Radiación adaptativa<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p4-d" name="q4" value="D"><label for="p4-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">D) Cuello de botella poblacional<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">5. A nivel celular y bioquímico, el dominio Archaea se diferencia del dominio Bacteria principalmente porque:</h3>
+                        <div class="grid grid-cols-1 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p5-a" name="q5" value="A"><label for="p5-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Las arqueas tienen núcleo verdadero (eucariotas).<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p5-b" name="q5" value="B"><label for="p5-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) Las arqueas carecen de peptidoglicano en su pared celular y poseen lípidos unidos por enlaces éter.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p5-c" name="q5" value="C"><label for="p5-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) Las bacterias no poseen ribosomas funcionales.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 6 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">6. El establecimiento de Áreas Naturales Protegidas (ANP) es un ejemplo claro de una estrategia de:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p6-a" name="q6" value="A"><label for="p6-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Conservación ex situ<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p6-b" name="q6" value="B"><label for="p6-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) Domesticación genética<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p6-c" name="q6" value="C"><label for="p6-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) Conservación in situ<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p6-d" name="q6" value="D"><label for="p6-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">D) Bioprospección<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 7 -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">7. En genética de poblaciones, la "deriva génica" tiene un efecto más fuerte en poblaciones:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-emerald-600">
+                            <div><input type="radio" id="p7-a" name="q7" value="A"><label for="p7-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">A) Muy grandes y panmícticas<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p7-b" name="q7" value="B"><label for="p7-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">B) Pequeñas o fragmentadas<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p7-c" name="q7" value="C"><label for="p7-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">C) Con alta tasa de mutación<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p7-d" name="q7" value="D"><label for="p7-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-300 text-slate-700 relative">D) Sometidas a alta inmigración<i class="fas fa-check-circle absolute top-4 right-4 text-emerald-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PASO 2: Recursos Bióticos (7 Preguntas) -->
+            <div class="form-step hidden fade-in" data-step="2">
+                <div class="bg-teal-500 text-white p-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fas fa-tree"></i> Sección 2: Recursos Bióticos
+                    </h2>
+                    <p class="text-teal-50 mt-2">Ecología, dinámica de ecosistemas y ordenamiento territorial.</p>
+                </div>
+                <div class="p-6 sm:p-8 space-y-10">
+                    
+                    <!-- Pregunta 8 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">8. En un flujo de energía dentro de un ecosistema, ¿cuál nivel trófico captura la energía solar primariamente?</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-teal-600">
+                            <div><input type="radio" id="p8-a" name="q8" value="A"><label for="p8-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Consumidores primarios<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p8-b" name="q8" value="B"><label for="p8-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Descomponedores<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p8-c" name="q8" value="C"><label for="p8-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">C) Productores<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p8-d" name="q8" value="D"><label for="p8-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">D) Omnívoros<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 9 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">9. ¿Cuál es el principal impacto ecológico de las Especies Exóticas Invasoras (EEI) en un nuevo ecosistema?</h3>
+                            <button type="button" onclick="toggleHint('hint-9')" class="shrink-0 text-amber-500 hover:text-amber-600 text-sm font-medium flex items-center gap-1 transition-colors bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200"><i class="fas fa-lightbulb"></i> Apoyo</button>
+                        </div>
+                        <div id="hint-9" class="hidden mb-4 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-900 rounded-r text-sm"><strong>Pista:</strong> Suelen carecer de depredadores naturales y compiten agresivamente por los recursos locales.</div>
+                        <div class="grid grid-cols-1 gap-4 text-teal-600">
+                            <div><input type="radio" id="p9-a" name="q9" value="A"><label for="p9-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Incrementan inmediatamente la biodiversidad del ecosistema al añadir una nueva especie.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p9-b" name="q9" value="B"><label for="p9-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Desplazan a las especies nativas por competencia competitiva, depredación o transmisión de enfermedades.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p9-c" name="q9" value="C"><label for="p9-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">C) Estabilizan las redes tróficas que se encontraban desequilibradas.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 10 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">10. Después de un incendio forestal que destruye la vegetación pero deja el suelo intacto, el proceso de recuperación vegetal que ocurre se llama:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-teal-600">
+                            <div><input type="radio" id="p10-a" name="q10" value="A"><label for="p10-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Sucesión primaria<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p10-b" name="q10" value="B"><label for="p10-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Sucesión secundaria<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p10-c" name="q10" value="C"><label for="p10-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">C) Clímax ecológico<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p10-d" name="q10" value="D"><label for="p10-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">D) Eutrofización<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 11 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">11. En el ciclo biogeoquímico del nitrógeno, la fijación del nitrógeno atmosférico (N2) en formas utilizables por las plantas es llevada a cabo primordialmente por:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-teal-600">
+                            <div><input type="radio" id="p11-a" name="q11" value="A"><label for="p11-a" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Hongos micorrízicos<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p11-b" name="q11" value="B"><label for="p11-b" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Bacterias especializadas (ej. Rhizobium)<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p11-c" name="q11" value="C"><label for="p11-c" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">C) Los estomas de las hojas<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p11-d" name="q11" value="D"><label for="p11-d" class="block w-full border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-teal-300 text-slate-700 relative">D) Fitoplancton marino<i class="fas fa-check-circle absolute top-4 right-4 text-teal-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 12, 13, 14 compactadas visualmente -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">12. El Ordenamiento Ecológico del Territorio (OET) es un instrumento de política ambiental cuyo fin principal es:</h3>
+                        <div class="grid grid-cols-1 gap-3 text-teal-600">
+                            <div><input type="radio" id="p12-a" name="q12" value="A"><label for="p12-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Regular y orientar el uso del suelo y las actividades productivas de acuerdo a la vocación y aptitud ambiental.<i class="fas fa-check-circle absolute top-3 right-3 text-teal-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p12-b" name="q12" value="B"><label for="p12-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Prohibir cualquier tipo de asentamiento humano en zonas con biodiversidad.<i class="fas fa-check-circle absolute top-3 right-3 text-teal-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">13. La purificación del agua, la polinización de cultivos y el control del clima son ejemplos de:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-teal-600">
+                            <div><input type="radio" id="p13-a" name="q13" value="A"><label for="p13-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Servicios ecosistémicos de regulación<i class="fas fa-check-circle absolute top-3 right-3 text-teal-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p13-b" name="q13" value="B"><label for="p13-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Bienes ecosistémicos de provisión<i class="fas fa-check-circle absolute top-3 right-3 text-teal-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">14. En dinámica de poblaciones, el modelo clásico de Lotka-Volterra describe las oscilaciones numéricas poblacionales derivadas de la interacción entre:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-teal-600">
+                            <div><input type="radio" id="p14-a" name="q14" value="A"><label for="p14-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-teal-300 text-slate-700 relative">A) Competidores por el mismo nicho<i class="fas fa-check-circle absolute top-3 right-3 text-teal-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p14-b" name="q14" value="B"><label for="p14-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-teal-300 text-slate-700 relative">B) Depredador y presa<i class="fas fa-check-circle absolute top-3 right-3 text-teal-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PASO 3: Sistemas Vivos (7 Preguntas) -->
+            <div class="form-step hidden fade-in" data-step="3">
+                <div class="bg-cyan-500 text-white p-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fas fa-dna"></i> Sección 3: Sistemas Vivos
+                    </h2>
+                    <p class="text-cyan-50 mt-2">Biología celular, molecular, genética y fisiología.</p>
+                </div>
+                <div class="p-6 sm:p-8 space-y-10">
+                    
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">15. ¿Qué orgánulo celular eucariota es el sitio principal para la generación de ATP a través de la respiración celular aerobia?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p15-a" name="q15" value="A"><label for="p15-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) Aparato de Golgi<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p15-b" name="q15" value="B"><label for="p15-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) Mitocondria<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">16. Durante la fase luminosa de la fotosíntesis (reacciones dependientes de la luz) que ocurre en la membrana tilacoidal, los productos finales útiles para la fase oscura son:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p16-a" name="q16" value="A"><label for="p16-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) Glucosa y Oxígeno<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p16-b" name="q16" value="B"><label for="p16-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) ATP y NADPH<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p16-c" name="q16" value="C"><label for="p16-c" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">C) Dióxido de carbono y Agua<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p16-d" name="q16" value="D"><label for="p16-d" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">D) NAD+ y FADH2<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">17. ¿Qué proceso exclusivo de la Meiosis (y ausente en la Mitosis) asegura la variabilidad genética entre los gametos?</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p17-a" name="q17" value="A"><label for="p17-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) Citocinesis ecuatorial<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p17-b" name="q17" value="B"><label for="p17-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) El entrecruzamiento cromosómico (crossing-over) en la Profase I<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">18. En el Dogma Central de la Biología Molecular, la "Traducción" ocurre en el ________ y su propósito es sintetizar ________.</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p18-a" name="q18" value="A"><label for="p18-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) Núcleo / ARN mensajero<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p18-b" name="q18" value="B"><label for="p18-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) Ribosoma / Proteínas<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">19. El paso de iones a través de la membrana plasmática en contra de su gradiente de concentración, requiriendo gasto de energía (ATP), se conoce como:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p19-a" name="q19" value="A"><label for="p19-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) Difusión facilitada<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p19-b" name="q19" value="B"><label for="p19-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) Transporte activo (ej. Bomba Na+/K+)<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">20. Si dos individuos que son portadores heterocigotos para un rasgo genético autosómico recesivo (Aa) se cruzan, ¿qué porcentaje de su descendencia se espera fenotípicamente que exprese el rasgo recesivo?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p20-a" name="q20" value="A"><label for="p20-a" class="block border-2 p-3 rounded-xl text-center cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) 0%</label></div>
+                            <div><input type="radio" id="p20-b" name="q20" value="B"><label for="p20-b" class="block border-2 p-3 rounded-xl text-center cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) 25%</label></div>
+                            <div><input type="radio" id="p20-c" name="q20" value="C"><label for="p20-c" class="block border-2 p-3 rounded-xl text-center cursor-pointer hover:border-cyan-300 text-slate-700 relative">C) 50%</label></div>
+                            <div><input type="radio" id="p20-d" name="q20" value="D"><label for="p20-d" class="block border-2 p-3 rounded-xl text-center cursor-pointer hover:border-cyan-300 text-slate-700 relative">D) 75%</label></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">21. Las enzimas son macromoléculas vitales biológicas que actúan como biocatalizadores al:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-cyan-600">
+                            <div><input type="radio" id="p21-a" name="q21" value="A"><label for="p21-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">A) Disminuir la energía de activación necesaria para una reacción.<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                            <div><input type="radio" id="p21-b" name="q21" value="B"><label for="p21-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-cyan-300 text-slate-700 relative">B) Aumentar la energía de activación, estabilizando los reactivos.<i class="fas fa-check-circle absolute top-3 right-3 text-cyan-500 opacity-0 transition-all check-icon text-lg"></i></label></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PASO 4: Investigación Biológica (7 Preguntas) -->
+            <div class="form-step hidden fade-in" data-step="4">
+                <div class="bg-blue-500 text-white p-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fas fa-microscope"></i> Sección 4: Investigación Biológica
+                    </h2>
+                    <p class="text-blue-50 mt-2">Método científico, diseño muestral y bioestadística.</p>
+                </div>
+                <div class="p-6 sm:p-8 space-y-10">
+                    
+                    <!-- Pregunta 22 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start mb-4 gap-4">
+                            <h3 class="text-lg font-semibold">22. En un diseño experimental, ¿qué representa la "Hipótesis Nula" (H0)?</h3>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4 text-blue-600">
+                            <div><input type="radio" id="p22-a" name="q22" value="A"><label for="p22-a" class="block border-2 p-4 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) La afirmación de que no existe diferencia significativa o efecto real entre los tratamientos evaluados.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-blue-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                            <div><input type="radio" id="p22-b" name="q22" value="B"><label for="p22-b" class="block border-2 p-4 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) La suposición de que el tratamiento experimental tiene un efecto 100% positivo comprobado.<i class="fas fa-check-circle absolute top-[50%] -translate-y-1/2 right-4 text-blue-500 opacity-0 transition-all check-icon text-xl"></i></label></div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 23, 24, 25, 26, 27, 28 -->
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">23. La variable que el investigador manipula o controla intencionalmente en un experimento se llama:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-600">
+                            <div><input type="radio" id="p23-a" name="q23" value="A"><label for="p23-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) Variable Dependiente</label></div>
+                            <div><input type="radio" id="p23-b" name="q23" value="B"><label for="p23-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) Variable Independiente</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">24. Se desea probar 4 fertilizantes en un campo donde la pendiente causa escorrentía diferencial de agua de norte a sur. El diseño experimental más adecuado para controlar esta heterogeneidad espacial es:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-600">
+                            <div><input type="radio" id="p24-a" name="q24" value="A"><label for="p24-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) Diseño Completamente al Azar (DCA)</label></div>
+                            <div><input type="radio" id="p24-b" name="q24" value="B"><label for="p24-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) Diseño de Bloques Completamente al Azar (DBCA)</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">25. Un método común para evaluar la densidad de corales en un arrecife extenso sin contar cada individuo es mediante el muestreo por:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-600">
+                            <div><input type="radio" id="p25-a" name="q25" value="A"><label for="p25-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) Transectos (líneas o bandas en el fondo)</label></div>
+                            <div><input type="radio" id="p25-b" name="q25" value="B"><label for="p25-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) Captura-Recaptura (índice de Lincoln-Petersen)</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">26. Tras realizar una prueba estadística, obtienes un valor p (p-value) de 0.03 con un nivel de significancia (alfa) de 0.05. ¿Qué decisión tomas?</h3>
+                        <div class="grid grid-cols-1 gap-4 text-blue-600">
+                            <div><input type="radio" id="p26-a" name="q26" value="A"><label for="p26-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) Se acepta la Hipótesis Nula (no hay diferencia).</label></div>
+                            <div><input type="radio" id="p26-b" name="q26" value="B"><label for="p26-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) Se rechaza la Hipótesis Nula (hay diferencia significativa).</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">27. El Análisis de Varianza (ANOVA) se utiliza principalmente para:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-600">
+                            <div><input type="radio" id="p27-a" name="q27" value="A"><label for="p27-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) Comparar las medias poblacionales de tres o más grupos independientes.</label></div>
+                            <div><input type="radio" id="p27-b" name="q27" value="B"><label for="p27-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) Determinar la correlación lineal perfecta entre dos variables discretas.</label></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">28. En la ética de la experimentación con animales, el principio de las "3Rs" significa:</h3>
+                        <div class="grid grid-cols-1 gap-4 text-blue-600">
+                            <div><input type="radio" id="p28-a" name="q28" value="A"><label for="p28-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">A) Reemplazo, Reducción y Refinamiento (del uso de animales).</label></div>
+                            <div><input type="radio" id="p28-b" name="q28" value="B"><label for="p28-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-blue-300 text-slate-700 relative">B) Recolección, Reproducción y Rescate (de la fauna silvestre).</label></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PASO 5: Comprensión Lectora (6 Preguntas) -->
+            <div class="form-step hidden fade-in" data-step="5">
+                <div class="bg-violet-500 text-white p-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fas fa-book-open"></i> Sección Transversal: Comprensión Lectora
+                    </h2>
+                </div>
+                <div class="p-6 sm:p-8 space-y-10">
+                    
+                    <!-- Texto 1 -->
+                    <div class="bg-slate-100 p-5 rounded-xl border border-slate-200 text-sm leading-relaxed italic text-slate-700">
+                        <strong>Texto A:</strong> "La acidificación de los océanos, provocada por la excesiva absorción oceánica de dióxido de carbono atmosférico, reduce drásticamente la disponibilidad de iones de carbonato. Estos iones son esenciales para los organismos calcificadores marinos, como corales constructores de arrecifes y moluscos, quienes los requieren para el desarrollo de sus exoesqueletos de carbonato de calcio. Esta alteración química, sumada al calentamiento global, debilita estructuralmente a estas especies base, amenazando con desestabilizar amplias redes tróficas oceánicas en las próximas décadas si las emisiones no se mitigan."
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">29. Según el texto, ¿cuál es el mecanismo químico primario que pone en riesgo a los organismos calcificadores?</h3>
+                        <div class="grid grid-cols-1 gap-4 text-violet-600">
+                            <div><input type="radio" id="p29-a" name="q29" value="A"><label for="p29-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">A) La reducción de disponibilidad de iones de carbonato, producto del exceso de dióxido de carbono absorbido.</label></div>
+                            <div><input type="radio" id="p29-b" name="q29" value="B"><label for="p29-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">B) El aumento del grosor de sus exoesqueletos a causa del calentamiento del agua.</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">30. La consecuencia biológica directa para los corales y moluscos expuestos a estas condiciones es:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-violet-600">
+                            <div><input type="radio" id="p30-a" name="q30" value="A"><label for="p30-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">A) Su rápido crecimiento metabólico compensatorio.</label></div>
+                            <div><input type="radio" id="p30-b" name="q30" value="B"><label for="p30-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">B) El debilitamiento estructural de sus exoesqueletos.</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">31. ¿Cuál es el propósito o mensaje principal del Texto A?</h3>
+                        <div class="grid grid-cols-1 gap-4 text-violet-600">
+                            <div><input type="radio" id="p31-a" name="q31" value="A"><label for="p31-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">A) Describir anatómicamente el funcionamiento del carbonato de calcio en los moluscos.</label></div>
+                            <div><input type="radio" id="p31-b" name="q31" value="B"><label for="p31-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">B) Advertir sobre los impactos ecológicos de las emisiones de carbono sobre la química marina y la fauna béntica.</label></div>
+                        </div>
+                    </div>
+
+                    <!-- Texto 2 -->
+                    <div class="bg-slate-100 p-5 rounded-xl border border-slate-200 text-sm leading-relaxed italic text-slate-700">
+                        <strong>Texto B:</strong> "La herramienta CRISPR-Cas9 ha revolucionado la biotecnología agrícola al permitir la edición precisa de genes de interés comercial sin introducir ADN de otras especies, diferenciándose radicalmente de los cultivos transgénicos tradicionales. Esto permite crear plantas resistentes a sequías en una fracción del tiempo. Sin embargo, el estatus regulatorio global de estos cultivos es fragmentado: mientras algunos países americanos los regulan convencionalmente al no contener ADN foráneo, la Unión Europea los somete a la misma estricta normativa que a los Organismos Genéticamente Modificados (OGM)."
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">32. Según el texto, la principal ventaja técnica de CRISPR en la agricultura respecto a los transgénicos es:</h3>
+                        <div class="grid grid-cols-1 gap-4 text-violet-600">
+                            <div><input type="radio" id="p32-a" name="q32" value="A"><label for="p32-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">A) La edición precisa del genoma propio de la planta sin introducir ADN de especies ajenas.</label></div>
+                            <div><input type="radio" id="p32-b" name="q32" value="B"><label for="p32-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">B) La creación de nuevas especies combinando ADN de plantas y animales velozmente.</label></div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">33. La palabra "fragmentado" empleada para describir el estatus regulatorio global, hace referencia a que:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-violet-600">
+                            <div><input type="radio" id="p33-a" name="q33" value="A"><label for="p33-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">A) Las leyes ambientales están incompletas o rotas por la tecnología.</label></div>
+                            <div><input type="radio" id="p33-b" name="q33" value="B"><label for="p33-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">B) Existen discrepancias y diferencias en cómo los distintos países legislan la tecnología.</label></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">34. ¿Qué postura regulatoria mantiene la Unión Europea respecto a los cultivos editados con CRISPR según la lectura?</h3>
+                        <div class="grid grid-cols-1 gap-4 text-violet-600">
+                            <div><input type="radio" id="p34-a" name="q34" value="A"><label for="p34-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">A) Los considera idénticos a los transgénicos clásicos y les aplica las mismas regulaciones estrictas (OGM).</label></div>
+                            <div><input type="radio" id="p34-b" name="q34" value="B"><label for="p34-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-violet-300 text-slate-700 relative">B) Los cataloga como cultivos convencionales al no contener ADN exógeno, aprobándolos fácilmente.</label></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PASO 6: Redacción Indirecta (6 Preguntas) -->
+            <div class="form-step hidden fade-in" data-step="6">
+                <div class="bg-fuchsia-500 text-white p-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fas fa-pen-nib"></i> Sección Transversal: Redacción Indirecta
+                    </h2>
+                </div>
+                <div class="p-6 sm:p-8 space-y-10">
+                    
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">35. Selecciona la oración puntuada y acentuada correctamente para un reporte técnico:</h3>
+                        <div class="grid grid-cols-1 gap-3 text-fuchsia-600">
+                            <div><input type="radio" id="p35-a" name="q35" value="A"><label for="p35-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">A) La muestra fue recolectada en el bosque de coníferas sin embargo no presento indicios.</label></div>
+                            <div><input type="radio" id="p35-b" name="q35" value="B"><label for="p35-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">B) La muestra fue recolectada en el bosque de coníferas; sin embargo, no presentó indicios.</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">36. Identifica el uso correcto entre "sino" y "si no" en el siguiente contexto científico:</h3>
+                        <div class="grid grid-cols-1 gap-3 text-fuchsia-600">
+                            <div><input type="radio" id="p36-a" name="q36" value="A"><label for="p36-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">A) El patógeno no es una bacteria de vida libre, <strong>sino</strong> un parásito intracelular obligado.</label></div>
+                            <div><input type="radio" id="p36-b" name="q36" value="B"><label for="p36-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">B) El patógeno no es una bacteria de vida libre, <strong>si no</strong> un parásito intracelular obligado.</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">37. Señala el error de concordancia en la siguiente frase: "La manada de lobos grises que habitan en la reserva natural atacaron al ganado."</h3>
+                        <div class="grid grid-cols-1 gap-3 text-fuchsia-600">
+                            <div><input type="radio" id="p37-a" name="q37" value="A"><label for="p37-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">A) El núcleo del sujeto es "manada" (singular), por lo tanto los verbos deberían estar en singular ("habita", "atacó").</label></div>
+                            <div><input type="radio" id="p37-b" name="q37" value="B"><label for="p37-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">B) "Lobos grises" es femenino, por lo que debería decir "las lobas grises".</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">38. ¿Cuál serie de palabras contiene únicamente términos esdrújulos correctamente tildados en el contexto biológico?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-fuchsia-600">
+                            <div><input type="radio" id="p38-a" name="q38" value="A"><label for="p38-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">A) Anatómia, endémico, hábitat, genetica</label></div>
+                            <div><input type="radio" id="p38-b" name="q38" value="B"><label for="p38-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">B) Análisis, biológico, espécimen, endémico</label></div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-8">
+                        <h3 class="text-lg font-semibold mb-4">39. Acorde al formato APA (7ma edición), ¿cuál es la estructura básica correcta para citar un artículo de revista en las referencias?</h3>
+                        <div class="grid grid-cols-1 gap-3 text-fuchsia-600">
+                            <div><input type="radio" id="p39-a" name="q39" value="A"><label for="p39-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">A) Apellido, A. A. (Año). Título del artículo. <em>Nombre de la Revista, volumen</em>(número), páginas. DOI</label></div>
+                            <div><input type="radio" id="p39-b" name="q39" value="B"><label for="p39-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">B) Título del artículo. Apellido, A. A. (Año). Nombre de la Revista.</label></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">40. Identifica el uso incorrecto del gerundio (gerundio de posterioridad) muy común, y penalizado, en reportes técnicos:</h3>
+                        <div class="grid grid-cols-1 gap-3 text-fuchsia-600">
+                            <div><input type="radio" id="p40-a" name="q40" value="A"><label for="p40-a" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">A) El investigador observó las muestras, descubriendo después una nueva cepa fúngica.</label></div>
+                            <div><input type="radio" id="p40-b" name="q40" value="B"><label for="p40-b" class="block border-2 p-3 rounded-xl cursor-pointer hover:border-fuchsia-300 text-slate-700 relative">B) El microorganismo está degradando los compuestos orgánicos rápidamente.</label></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- PASO 7: Resultado (Agradecimiento) -->
+            <div class="form-step hidden fade-in" data-step="7">
+                <div class="p-10 text-center space-y-6">
+                    <div class="inline-block bg-green-100 text-green-500 rounded-full p-6 mx-auto">
+                        <i class="fas fa-check-double text-5xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-slate-800">¡Simulación Completada!</h2>
+                    <p class="text-slate-600 max-w-md mx-auto">
+                        Has respondido a un total de <strong>40 preguntas</strong> intensivas de las áreas disciplinares y transversales evaluadas por el <strong>EGEL Plus EGE-BIO</strong>. ¡Excelente esfuerzo en tu preparación!
+                    </p>
+                    <div class="pt-6">
+                        <button type="button" onclick="location.reload()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-semibold hover:bg-slate-700 transition-colors shadow-lg shadow-slate-200">
+                            Volver a intentar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Navegación del Formulario -->
+            <div id="form-navigation" class="bg-slate-50 border-t border-slate-200 p-6 flex justify-between items-center">
+                <button type="button" id="btn-prev" onclick="changeStep(-1)" class="hidden px-6 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Anterior
+                </button>
+                <div class="flex-grow"></div>
+                <button type="button" id="btn-next" onclick="changeStep(1)" class="px-8 py-2.5 rounded-xl bg-slate-800 text-white font-medium hover:bg-slate-700 shadow-md transition-all">
+                    Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button type="button" id="btn-submit" onclick="submitForm()" class="hidden px-8 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium hover:shadow-lg hover:shadow-emerald-200 transition-all">
+                    Finalizar Evaluación <i class="fas fa-flag-checkered ml-2"></i>
+                </button>
+            </div>
+            
+        </form>
+    </main>
+
+    <!-- Modal personalizado para alertas -->
+    <div id="custom-alert" class="fixed inset-0 bg-slate-900/50 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform" id="alert-content">
+            <div class="text-amber-500 text-center mb-4">
+                <i class="fas fa-exclamation-triangle text-4xl"></i>
+            </div>
+            <h4 class="text-lg font-bold text-center mb-2">¡Atención!</h4>
+            <p class="text-slate-600 text-center mb-6">Por favor, responde <strong>todas las preguntas</strong> de esta sección antes de continuar.</p>
+            <button onclick="closeAlert()" class="w-full bg-slate-800 text-white py-2.5 rounded-xl font-medium hover:bg-slate-700 transition-colors">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript para la lógica dinámica -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6; 
+
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.classList.contains('hidden')) {
+                hintElement.classList.remove('hidden');
+                hintElement.classList.add('fade-in');
+            } else {
+                hintElement.classList.add('hidden');
+            }
+        }
+
+        // VALIDACIÓN MEJORADA: Obliga a contestar TODAS las preguntas de la sección actual
+        function isCurrentStepValid() {
+            const stepDiv = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+            if(!stepDiv) return true;
+            
+            const radios = stepDiv.querySelectorAll('input[type="radio"]');
+            if (radios.length === 0) return true; // Si no hay preguntas
+            
+            const names = new Set();
+            radios.forEach(r => names.add(r.name));
+
+            let allAnswered = true;
+            names.forEach(name => {
+                const checked = stepDiv.querySelector(`input[name="${name}"]:checked`);
+                if (!checked) {
+                    allAnswered = false;
+                }
+            });
+            return allAnswered;
+        }
+
+        function changeStep(direction) {
+            if (direction === 1 && !isCurrentStepValid()) {
+                showAlert();
+                return;
+            }
+
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('hidden');
+            currentStep += direction;
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('hidden');
+            
+            updateUI();
+        }
+
+        function submitForm() {
+            if (!isCurrentStepValid()) {
+                showAlert();
+                return;
+            }
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('hidden');
+            document.getElementById('form-navigation').classList.add('hidden');
+            
+            document.querySelector(`.form-step[data-step="7"]`).classList.remove('hidden');
+            
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').innerText = '100%';
+        }
+
+        function updateUI() {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const btnSubmit = document.getElementById('btn-submit');
+            
+            if (currentStep === 1) {
+                btnPrev.classList.add('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+            }
+
+            if (currentStep === totalSteps) {
+                btnNext.classList.add('hidden');
+                btnSubmit.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnSubmit.classList.add('hidden');
+            }
+
+            const progressPercentage = ((currentStep - 1) / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+            document.getElementById('progress-text').innerText = `${Math.round(progressPercentage)}%`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showAlert() {
+            const alertBox = document.getElementById('custom-alert');
+            const alertContent = document.getElementById('alert-content');
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertContent.classList.remove('scale-95');
+                alertContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeAlert() {
+            const alertBox = document.getElementById('custom-alert');
+            const alertContent = document.getElementById('alert-content');
+            alertContent.classList.remove('scale-100');
+            alertContent.classList.add('scale-95');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 200);
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
